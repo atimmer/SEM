@@ -1,5 +1,7 @@
 package simplechat.common;
 
+import java.util.ArrayList;
+
 public class Person
 {
   private String nickname;
@@ -40,7 +42,7 @@ public class Person
       this.password = newPassword;
       result = true;
     }
-    return result
+    return result;
   }
   
   public static boolean userExists(String nickname) {
@@ -54,7 +56,8 @@ public class Person
   }
 
   public boolean equals(Object other) {
-    return other instanceof Person && other.nickname == this.nickname
+	  
+    return other instanceof Person && ((Person)other).nickname == this.nickname;
   }
   
 }
