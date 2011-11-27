@@ -68,6 +68,9 @@ public class ChatClient extends AbstractClient
   {
     try
     {
+//    	if(message.length() > 0 && message.charAt(0) == ':') {
+//    		message = ":" + message;
+//    	}
       sendToServer(message);
     }
     catch(IOException e)

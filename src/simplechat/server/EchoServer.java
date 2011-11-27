@@ -1,10 +1,12 @@
-package simplechat;
+package simplechat.server;
 
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com
 
 import java.io.*;
+
+import simplechat.common.*;
 import ocsf.server.*;
 
 /**
@@ -40,6 +42,24 @@ public class EchoServer extends AbstractServer
 
 
   //Instance methods ************************************************
+  
+  private void sendErrorToClient(ConnectionToClient client) {
+	  try {
+			client.sendToClient("* ERROR. INVALID COMMAND!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+  }
+  
+  private void sendConfirmationToClient(ConnectionToClient client) {
+	  try {
+			client.sendToClient("+ Success");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+  }
 
   /**
    * This method handles any messages received from the client.
@@ -51,7 +71,64 @@ public class EchoServer extends AbstractServer
     (Object msg, ConnectionToClient client)
   {
     System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+    
+    String message = (String)msg;
+    
+    Person p = (Person)client.getInfo("User");
+    
+    if(message.length() < 2 || message.charAt(0) != ':' || message.charAt(1) == ':') {
+    	// We have a normal message here. 
+    	if(p.loggedIn()) {
+    		this.sendToAllClients(p.getNickname() + ": " + message);
+    	}else{
+    		this.sendErrorToClient(client);
+    	}
+    }else{
+    	if(message.length() < 5) {
+    		this.sendErrorToClient(client);
+    	}else{
+    		String command = message.substring(1, 5);
+    		
+    		if(command.equals("USER")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				client.setInfo("Username", message.substring(6));
+    			}
+    		}else if(command.equals("PASS")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String password = message.substring(6);
+    				String username = (String)client.getInfo("Username");
+    				
+    				if(password == null || username == null) {
+    					this.sendErrorToClient(client);
+    				}else{
+    					boolean authenticated = p.authenticate(username, password);
+    					
+    					if(authenticated) {
+    						this.sendConfirmationToClient(client);
+    					}else{
+    						this.sendErrorToClient(client);
+    					}
+    				}
+    			}
+    		}else if(command.equals("NWNN")) {
+    			// NeW NickName
+    			if(message.length() < 7 || p.loggedIn() == false) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				boolean succeeded = p.changeNickname(message.substring(6));
+    				if(succeeded) {
+    					this.sendConfirmationToClient(client);
+    				}else{
+    					this.sendErrorToClient(client);
+    				}
+    			}
+    		}
+    	}
+    }
   }
 
   /**
@@ -76,6 +153,8 @@ public class EchoServer extends AbstractServer
 
   
   protected void clientConnected(ConnectionToClient con) {
+	  Person p = Person.register("steve", "jobs", "jobs");
+	  con.setInfo("User", p);
 	  System.out.println("A new client has connected.");
   }
   
@@ -84,7 +163,7 @@ public class EchoServer extends AbstractServer
   }
   
   protected void clientException(ConnectionToClient con, Throwable e) {
-	  System.out.println("A client triggered an exception.");
+	  System.out.println("A client triggered an exception." + e.getMessage());
   }
   
   
