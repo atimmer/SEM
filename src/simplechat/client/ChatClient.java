@@ -30,6 +30,7 @@ public class ChatClient extends AbstractClient
   int loggingIn;
   int registering;
   int changingPass;
+  int changingName;
 
 
   //Constructors ****************************************************
@@ -56,6 +57,8 @@ public class ChatClient extends AbstractClient
   private void showHelp() {
 	  clientUI.display("login        -- Login to an existing account at the server ");
 	  clientUI.display("register     -- Register for an account at the server");
+	  clientUI.display("changeName   -- Change your name into something else");
+	  clientUI.display("changePass   -- Change your password into something else");
 	  clientUI.display("help         -- Display this message");	
   }
 
@@ -95,16 +98,30 @@ public class ChatClient extends AbstractClient
     		loggingIn = 0;
     		message = ":PASS " + message;
     	} else if(registering == 1) {
-    		loggingIn = 2;
-    		message = "RGT1 " + message;
+    		registering = 2;
+    		message = ":RGT1 " + message;
     		clientUI.display("Give your preffered password");
     	} else if(registering == 2) {
-    		loggingIn = 3;
-    		message = "RGT2 " + message;
+    		registering = 3;
+    		message = ":RGT2 " + message;
     		clientUI.display("Confirm your password");
     	} else if(registering == 3) {
-    		loggingIn = 0;
-    		message = "RGT3" + message;
+    		registering = 0;
+    		message = ":RGT3 " + message;
+    	} else if(changingName == 1) {
+    		changingName = 0;
+    		message = ":NWNN " + message;
+    	} else if(changingPass == 1) {
+    		changingPass = 2;
+    		message = ":CHN1 " + message;
+    		clientUI.display("Give a new password");
+    	} else if(changingPass == 2) {
+    		changingPass = 3;
+    		message = ":CHN2 " + message;
+    		clientUI.display("Confirm your new password");
+    	} else if(changingPass == 3) {
+    		changingPass = 0;
+    		message = ":CHN3 " + message;
     	}
 		
 		if(message.equals("login")) {
@@ -114,6 +131,14 @@ public class ChatClient extends AbstractClient
 		} else if(message.equals("register")) {
 			clientUI.display("Give a username");
 			registering = 1;
+			sendMessage = false;
+		} else if (message.equals("changeName")) {
+			clientUI.display("Give a new username");
+			changingName = 1;
+			sendMessage = false;
+		} else if (message.equals("changePass")) {
+			clientUI.display("Give your old password");
+			changingPass = 1;
 			sendMessage = false;
 		} else if(message.equals("help")) {
 			showHelp();
