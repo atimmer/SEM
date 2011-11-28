@@ -53,9 +53,9 @@ public class Person
     return result;
   }
   
-  public boolean changePassword(String newPassword, String password, String passwordConfirmation) {
+  public boolean changePassword(String newPassword, String newPasswordConfirmation, String passwordConfirmation) {
     boolean result = false;
-    if (this.password.equals(password) && password.equals(passwordConfirmation)) {
+    if (this.password.equals(passwordConfirmation) && newPassword.equals(newPasswordConfirmation)) {
       this.password = newPassword;
       result = true;
     }
