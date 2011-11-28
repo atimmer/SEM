@@ -105,10 +105,11 @@ public class EchoServer extends AbstractServer
     				if(password == null || username == null) {
     					this.sendErrorToClient(client);
     				}else{
-    					boolean authenticated = p != null && p.authenticate(username, password);
+    					Person authenticated = Person.authenticate(username, password);
     					
-    					if(authenticated) {
+    					if(authenticated != null) {
     						this.sendConfirmationToClient(client);
+    						client.setInfo("User", authenticated);
     					}else{
     						this.sendErrorToClient(client);
     					}
