@@ -78,7 +78,7 @@ public class EchoServer extends AbstractServer
     
     if(message.length() < 2 || message.charAt(0) != ':' || message.charAt(1) == ':') {
     	// We have a normal message here. 
-    	if(p.loggedIn()) {
+    	if(p != null && p.loggedIn()) {
     		this.sendToAllClients(p.getNickname() + ": " + message);
     	}else{
     		this.sendErrorToClient(client);
@@ -105,7 +105,7 @@ public class EchoServer extends AbstractServer
     				if(password == null || username == null) {
     					this.sendErrorToClient(client);
     				}else{
-    					boolean authenticated = p.authenticate(username, password);
+    					boolean authenticated = p != null && p.authenticate(username, password);
     					
     					if(authenticated) {
     						this.sendConfirmationToClient(client);
@@ -116,16 +116,90 @@ public class EchoServer extends AbstractServer
     			}
     		}else if(command.equals("NWNN")) {
     			// NeW NickName
-    			if(message.length() < 7 || p.loggedIn() == false) {
+    			if(message.length() < 7 || p == null || p.loggedIn() == false) {
     				this.sendErrorToClient(client);
     			}else{
-    				boolean succeeded = p.changeNickname(message.substring(6));
+    				boolean succeeded = p != null && p.changeNickname(message.substring(6));
     				if(succeeded) {
     					this.sendConfirmationToClient(client);
     				}else{
     					this.sendErrorToClient(client);
     				}
     			}
+    		}else if(command.equals("RGT1")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String parameter = message.substring(6);
+    				client.setInfo("RGT1", parameter);
+    			}
+    		}else if(command.equals("RGT2")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String parameter = message.substring(6);
+    				client.setInfo("RGT2", parameter);
+    			}
+    		}else if(command.equals("RGT3")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String rgt1 = (String)client.getInfo("RGT1");
+    				String rgt2 = (String)client.getInfo("RGT2");
+    				String rgt3 = message.substring(6);
+    				
+    				if(rgt1 == null || rgt2 == null || rgt3 == null || rgt1.length() == 0 || rgt2.length() == 0 || rgt3.length() == 0) {
+    					this.sendErrorToClient(client);
+    				}else{
+    					Person newPerson = Person.register(rgt1, rgt2, rgt3);
+    					if(newPerson == null) {
+    						this.sendErrorToClient(client);
+    					}else{
+    						client.setInfo("User", newPerson);
+    						newPerson.authenticate(rgt1, rgt2);
+    						this.sendConfirmationToClient(client);
+    					}
+    				}
+    				
+    			}
+    		}else if(command.equals("CHN1")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String parameter = message.substring(6);
+    				client.setInfo("CHN1", parameter);
+    			}
+    		}else if(command.equals("CHN2")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String parameter = message.substring(6);
+    				client.setInfo("CHN2", parameter);
+    			}
+    		}else if(command.equals("CHN3")) {
+    			if(message.length() < 7) {
+    				this.sendErrorToClient(client);
+    			}else{
+    				String rgt1 = (String)client.getInfo("CHN1");
+    				String rgt2 = (String)client.getInfo("CHN2");
+    				String rgt3 = message.substring(6);
+    				
+    				if(rgt1 == null || rgt2 == null || rgt3 == null || rgt1.length() == 0 || rgt2.length() == 0 || rgt3.length() == 0) {
+    					this.sendErrorToClient(client);
+    				}else{
+    					boolean success = p.changePassword(rgt2, rgt3, rgt1);
+    					if(success) {
+    						this.sendConfirmationToClient(client);
+    					}else{
+    						this.sendErrorToClient(client);
+    					}
+    				}
+    				
+    			}
+    		}
+    		
+    		else{
+    			this.sendErrorToClient(client);
     		}
     	}
     }
@@ -153,8 +227,6 @@ public class EchoServer extends AbstractServer
 
   
   protected void clientConnected(ConnectionToClient con) {
-	  Person p = Person.register("steve", "jobs", "jobs");
-	  con.setInfo("User", p);
 	  System.out.println("A new client has connected.");
   }
   
