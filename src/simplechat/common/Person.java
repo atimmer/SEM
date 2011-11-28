@@ -31,9 +31,28 @@ public class Person
 	  return this.nickname;
   }
   
-  public boolean authenticate(String nickname, String password) {
-	  this.loggedIn = this.nickname.equals(nickname) && this.password.equals(password);
-	  return this.loggedIn;
+  public static Person authenticate(String nickname, String password) {
+	  
+	  Person result = null;
+	  
+	  if(userExists(nickname)) {
+		  
+		  for (int i=0; i<persons.size() && result == null; i++) {
+		      if (persons.get(i).nickname.equals(nickname)) {
+		    	  result = persons.get(i);
+		    	  
+		    	  if(result.nickname.equals(nickname) && result.password.equals(password)) {
+		    		  // Logged in!
+		    		  result.loggedIn = true;
+		    	  }else{
+		    		  result = null;
+		    	  }
+		      }
+		  }
+		  
+	  }
+	 
+	  return result;
   }
   
   public boolean loggedIn() {
