@@ -26,6 +26,10 @@ public class ChatClient extends AbstractClient
    * the display method in the client.
    */
   ChatIF clientUI;
+  
+  int loggingIn;
+  int registering;
+  int changingPass;
 
 
   //Constructors ****************************************************
@@ -44,6 +48,15 @@ public class ChatClient extends AbstractClient
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
     openConnection();
+
+    clientUI.display("A connection has been established to the server, you must first login or register.");
+    clientUI.display("For help on the available commands press \"help\"");
+  }
+  
+  private void showHelp() {
+	  clientUI.display("login        -- Login to an existing account at the server ");
+	  clientUI.display("register     -- Register for an account at the server");
+	  clientUI.display("help         -- Display this message");	
   }
 
 
@@ -68,10 +81,50 @@ public class ChatClient extends AbstractClient
   {
     try
     {
-//    	if(message.length() > 0 && message.charAt(0) == ':') {
-//    		message = ":" + message;
-//    	}
-      sendToServer(message);
+    	boolean sendMessage = true;
+
+    	if(message.length() > 0 && message.charAt(0) == ':') {
+			message = ":" + message;
+		}
+    	
+    	if(loggingIn == 1) {
+    		loggingIn = 2;
+    		message = ":USER " + message;
+    		clientUI.display("Give your password");
+    	} else if(loggingIn == 2) {
+    		loggingIn = 0;
+    		message = ":PASS " + message;
+    	} else if(registering == 1) {
+    		loggingIn = 2;
+    		message = "RGT1 " + message;
+    		clientUI.display("Give your preffered password");
+    	} else if(registering == 2) {
+    		loggingIn = 3;
+    		message = "RGT2 " + message;
+    		clientUI.display("Confirm your password");
+    	} else if(registering == 3) {
+    		loggingIn = 0;
+    		message = "RGT3" + message;
+    	}
+		
+		if(message.equals("login")) {
+			clientUI.display("Give your username");
+			loggingIn = 1;
+			sendMessage = false;
+		} else if(message.equals("register")) {
+			clientUI.display("Give a username");
+			registering = 1;
+			sendMessage = false;
+		} else if(message.equals("help")) {
+			showHelp();
+			sendMessage = false;
+		}
+		
+		if (sendMessage == true) {
+			sendToServer(message);
+		}
+	
+	  
     }
     catch(IOException e)
     {
