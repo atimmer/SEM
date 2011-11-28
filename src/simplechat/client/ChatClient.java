@@ -72,7 +72,11 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromServer(Object msg)
   {
-    clientUI.display(msg.toString());
+	  if (msg.toString().charAt(0) == '*') {
+		  clientUI.display(msg.toString().substring(1));
+	  } else {
+		  clientUI.display(msg.toString());
+	  }
   }
 
   /**
