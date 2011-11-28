@@ -20,7 +20,7 @@ public class Person
 		  persons = new ArrayList<Person>();
 	  }
     Person result = null;
-    if (password.equals(passwordConfirmation)) { 
+    if (!userExists(nickname) && password.equals(passwordConfirmation)) { 
       result = new Person(nickname, password);
       persons.add(result);
     }
