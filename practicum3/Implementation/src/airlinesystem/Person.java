@@ -17,6 +17,7 @@ public class Person {
 		return this.identifier;
 	}
 	
+<<<<<<< HEAD
 	public boolean hasBookingForFlight(Flight flight) {
 		
 		return false;
@@ -25,4 +26,6 @@ public class Person {
 	public String toString() {
 		return "{" + name + " (" + identifier + ")}";
 	}
+=======
+>>>>>>> 0b5d2afac7825e0c9715253c730cf1cb3ade68c2
 }

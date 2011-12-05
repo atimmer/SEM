@@ -25,7 +25,7 @@ public class CommandLine {
 	}
 	
 	/**
-	 * Starts up the CommandLine program, reads from the command line indefinitly
+	 * Starts up the CommandLine program, reads from the command line indefinitely
 	 */
 	public void init() {
 		System.out.println("Welcome to the Airline System");
@@ -105,6 +105,11 @@ public class CommandLine {
 			return result;
 		}
 		
+		result = new GetHasBookingCommand();
+		if(command.equals(result.commandString())) {
+			return result;
+		}
+		
 		result = new ShowAirlineCommand();
 		if(command.equals(result.commandString())) {
 			return result;
@@ -169,6 +174,7 @@ public class CommandLine {
 			p(String.format("%-50s- %s", "getperson id", "Displays the person with id"));
 			p(String.format("%-50s- %s", "gettemplate id", "Get's the template with the id"));
 			p(String.format("%-50s- %s", "getflights origin destination date", "Gets all flights with the specified origin, destination and date"));
+			p(String.format("%-50s- %s", "hasbooking person flight date", "Returns whether this person has a booking for the specified flight"));
 			p(String.format("%-50s- %s", "show", "Show the airline"));
 			p(String.format("%-50s- %s", "anything not specified", "Shows this message"));
 		}
@@ -249,6 +255,14 @@ public class CommandLine {
 		}
 		
 		public String commandString() { return "getflights"; }
+	}
+	
+	private class GetHasBookingCommand extends Command  {
+		public void execute(ArrayList<String> input) {
+			p(akAirlines.personHasBookingForFlight(akAirlines.personWithIdentifier(Integer.parseInt(input.get(1))), akAirlines.flightWithNumberAndDate(Integer.parseInt(input.get(2)), Date.valueOf(input.get(3)))));
+		}
+		
+		public String commandString() { return "hasbooking"; }
 	}
 	
 	private class ShowAirlineCommand extends Command {

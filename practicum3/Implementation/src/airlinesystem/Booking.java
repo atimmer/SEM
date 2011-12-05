@@ -30,6 +30,14 @@ public class Booking {
 		this.payment = payment;
 	}
 	
+	public Flight getFlight() {
+		return this.flight;
+	}
+	
+	public Person getPerson() {
+		return this.person;
+	}
+	
 	public Payment getPayment() {
 		return this.payment;
 	}
