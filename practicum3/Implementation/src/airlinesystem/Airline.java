@@ -22,6 +22,7 @@ public class Airline {
 	}
 	
 	// All kinds of creation methods here :)
+	// This is where the magic happens
 	
 	public Booking createBooking(Person person, Flight flight) {
 		Booking b = new Booking(person, flight);
