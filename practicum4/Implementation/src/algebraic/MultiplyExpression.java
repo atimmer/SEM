@@ -4,8 +4,7 @@ public class MultiplyExpression extends Expression {
 
 	@Override
 	public int getValue() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.componentA.getValue() * this.componentB.getValue();
 	}
 
 }
