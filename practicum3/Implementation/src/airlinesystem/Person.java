@@ -31,19 +31,6 @@ public class Person {
 		return this.identifier;
 	}
 	
-	/**
-	 * Gets whether or not this person has a booking for the flight
-	 * 
-	 * @param flight The flight for which the person might have a booking
-	 * 
-	 * @return Whether or not the person has a booking for the flight
-	 */
-	public boolean hasBookingForFlight(Flight flight) {
-		
-		return false;
-	}
-	
-	@Override
 	public String toString() {
 		return "{" + name + " (" + identifier + ")}";
 	}
