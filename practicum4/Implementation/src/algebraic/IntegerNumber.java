@@ -1,6 +1,6 @@
 package algebraic;
 
-public class Number extends Component {
+public class IntegerNumber extends Component {
 	
 	private int value;
 	
@@ -9,7 +9,7 @@ public class Number extends Component {
 	 * 
 	 * @ensure this.value = value
 	 */
-	public Number(int value) {
+	public IntegerNumber(int value) {
 		this.value = value;
 	}
 	
