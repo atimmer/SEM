@@ -17,8 +17,4 @@ public class Person {
 		return this.identifier;
 	}
 	
-	public boolean hasBookingForFlight(Flight flight) {
-		
-		return false;
-	}
 }

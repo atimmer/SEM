@@ -96,4 +96,14 @@ public class Airline {
 		return result;
 	}
 	
+	public boolean personHasBookingForFlight(Person person, Flight flight) {
+		boolean result = false;
+		for(int i = 0; i < bookings.size() && !result; i++) {
+			if(bookings.get(i).getFlight().equals(flight) && bookings.get(i).getPerson().equals(person)) {
+				result = true;
+			}
+		}
+		return result;
+	}
+	
 }
