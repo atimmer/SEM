@@ -14,4 +14,7 @@ public class Employee extends Person {
 		return this.jobDescription;
 	}
 
+	public String toString() {
+		return "{person: " + super.toString() + " with job " + jobDescription + "}";
+	}
 }

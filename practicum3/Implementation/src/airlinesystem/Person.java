@@ -21,4 +21,8 @@ public class Person {
 		
 		return false;
 	}
+	
+	public String toString() {
+		return "{" + name + " (" + identifier + ")}";
+	}
 }

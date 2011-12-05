@@ -96,4 +96,12 @@ public class Airline {
 		return result;
 	}
 	
+	public String toString() {
+		String result; 
+		result  = String.format("%-15s %s\n", "Persons", persons);
+		result += String.format("%-15s %s\n", "Bookings", bookings);
+		result += String.format("%-15s %s\n", "Flights", flights);
+		result += String.format("%-15s %s\n", "Templates", flightTemplates);
+		return result;
+	}
 }

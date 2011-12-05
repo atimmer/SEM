@@ -33,5 +33,8 @@ public class Booking {
 	public Payment getPayment() {
 		return this.payment;
 	}
-
+	
+	public String toString() {
+		return "{" + person + " goes with flight " + flight + " with payment " + payment + " at seat " + seatIdentifier + "}";
+	}
 }

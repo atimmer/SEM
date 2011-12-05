@@ -35,4 +35,8 @@ public class FlightTemplate {
 		return this.time;
 	}
 	
+	public String toString() {
+		return "{flightTemplate " + flightNumber + " from " + origin + " to " + destination + " at " + time + " a clock}"; 
+	}
+	
 }

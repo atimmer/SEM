@@ -36,8 +36,6 @@ public class CommandLine {
 				ArrayList<String> inputArray = splitCommand(input);
 				Command cmd = processCommand(inputArray.get(0));
 				
-				System.out.println(inputArray);
-				
 				if (cmd == null) {
 					cmd = new HelpCommand();
 				}

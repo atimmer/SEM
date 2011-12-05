@@ -25,4 +25,7 @@ public class Flight extends FlightTemplate {
 		return this.passengers;
 	}
 
+	public String toString() {
+		return "{flightTemplate: " + super.toString() + " on date " + date + "}";
+	}
 }
