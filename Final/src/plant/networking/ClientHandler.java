@@ -4,13 +4,11 @@ import java.io.*;
 import plant.*;
 import java.net.*;
 import plant.physical.*;
-import plant.physical.product.*;
-import plant.physical.resource.*;
 
 /**
- * Klasse die een connectie met een client beheerd
+ * Class that maintains and handles a client connection
  * 
- * @author Koen van Urk (s1076884)
+ * @author Koen van Urk and Anton Timmermans
  */
 public class ClientHandler extends Thread {
 
@@ -27,16 +25,24 @@ public class ClientHandler extends Thread {
 	private int resumeStep = 0;
 	private int addAssemblyLineStep = 0;
 	private int addStorageBinStep = 0;
+	private int robotStep = 0;
 	
 	private String productRunProduct = null;
 	private int productRunAssemblyLineIdentifier = 0;
 	
+	private String storageBinResource = null;
+	private int storageBinCapacity = 0;
+	private int storageBinAssemblyLine = 0;
+	
+	private String robotResource = null;
+	private int robotIdentifier = 0;
+	
 	
 	/**
-	 * Constructor voor een client
+	 * Constructor for a client
 	 * 
-	 * @param server De server waar deze client bij hoort
-	 * @param socket De socket voor deze client
+	 * @param server The server that this client belongs to
+	 * @param socket The socket for this client
 	 */
 	public ClientHandler(Server server, Socket socket) {
 		this.server = server;
@@ -71,7 +77,7 @@ public class ClientHandler extends Thread {
    			try {
    				input = in.readLine();
    			} catch(IOException e) {
-   				System.out.println("Verbinding verbroken.");
+   				System.out.println("Connection closed.");
    				shutDown();
    			}
     		
@@ -104,6 +110,10 @@ public class ClientHandler extends Thread {
         				this.handleA(input);
         			}else if(addStorageBinStep != 0) {
         				this.handleB(input);
+        			}else if(robotStep != 0) {
+        				this.handleT(input);
+        				
+        				
         			}else if(input.equals("S")) {
         				this.handleS(input);
         			}else if(input.equals("P")) {
@@ -116,6 +126,10 @@ public class ClientHandler extends Thread {
         				this.handleA(input);
         			}else if(input.equals("B")) {
         				this.handleB(input);
+        			}else if(input.equals("T")) {
+        				this.handleT(input);
+        			}else if(input.equals("E")) {
+        				shutDown();
         			}else{
         				displayMenu();
         			}
@@ -166,6 +180,7 @@ public class ClientHandler extends Thread {
 		resumeStep = 0;
 		addAssemblyLineStep = 0;
 		addStorageBinStep = 0;
+		robotStep = 0;
 	}
 	
 	private void displayMenu() {
@@ -180,6 +195,8 @@ public class ClientHandler extends Thread {
 		help = help + "H			Halt an assembly line\n";
 		help = help + "A			Add an assembly line\n";
 		help = help + "B			Add a storage bin\n";
+		help = help + "T			Add a robot\n";
+		help = help + "E			Exit\n";
 		help = help + "\nPick a menu item";
 		
 		deliver(help);
@@ -215,7 +232,12 @@ public class ClientHandler extends Thread {
 				int productionGoal = Integer.parseInt(input);
 				
 				try {
-					server.getFactory().scheduleProductRunForAssemblyLine(productRunAssemblyLineIdentifier, (Class<? extends Product>) Class.forName(productRunProduct), productionGoal);
+					
+					// This has already been checked when comparing the input to available Products
+					@SuppressWarnings("unchecked")
+					Class<? extends Product> theClass = (Class<? extends Product>) Class.forName(productRunProduct);
+					
+					server.getFactory().scheduleProductRunForAssemblyLine(productRunAssemblyLineIdentifier, theClass, productionGoal);
 					deliver("Product run scheduled.");
 					this.displayMenu();
 				} catch (ClassNotFoundException e) {
@@ -279,8 +301,103 @@ public class ClientHandler extends Thread {
 	}
 	
 	private void handleB(String input) {
-		deliver(server.getFactory().getStatus());
-		this.displayMenu();
+		if(addStorageBinStep == 0) {
+			deliver("Please enter a storage capacity:");
+			addStorageBinStep = 1;
+		}else if(addStorageBinStep == 1) {
+			try {
+				storageBinCapacity = Integer.parseInt(input);
+				addStorageBinStep = 2;
+				deliver("Please enter the name of the resource:");
+			} catch(NumberFormatException e) {
+				deliver("Input not a number. Please try again.");
+			}
+		}else if(addStorageBinStep == 2) {
+			if(input.equals("Button") || input.equals("Eye") || input.equals("Filling") || input.equals("Skin")) {
+				storageBinResource = "plant.physical.resource." + input;
+				addStorageBinStep = 3;
+				deliver("Please enter the identifier of the assembly line to assign this bin:");
+			}else{
+				deliver("Invalid resource, please try again.");
+			}
+		}else if(addStorageBinStep == 3) {
+			try {
+				storageBinAssemblyLine = Integer.parseInt(input);
+				addStorageBinStep = 4;
+				deliver("Please enter the amount of resources to add to this bin:");
+			} catch(NumberFormatException e) {
+				deliver("Input not a number. Please try again.");
+			}
+		}else{
+			try {
+				int productionGoal = Integer.parseInt(input);
+				
+				try {
+					
+					// This has already been checked when comparing the input to available Products
+					@SuppressWarnings("unchecked")
+					Class<? extends Resource> theClass = (Class<? extends Resource>) Class.forName(storageBinResource);
+					
+					StorageBin bin = new StorageBin(theClass, storageBinCapacity);
+					for(int i = 0; i < productionGoal; i++) {
+						try {
+							bin.addResource(theClass.newInstance());
+						} catch (Exception e) {
+							System.out.println("Could not create resource");
+						}
+					}
+					
+					server.getFactory().addStorageBinToAssemblyLine(bin, storageBinAssemblyLine);
+					deliver("Product run scheduled.");
+					this.displayMenu();
+				} catch (ClassNotFoundException e) {
+					deliver("Dammit. We screwed up!");
+				}
+			} catch(NumberFormatException e) {
+				deliver("Input not a number. Please try again.");
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void handleT(String input) {
+		if(robotStep == 0) {
+			deliver("Please enter a numerical identifier for this robot:");
+			robotStep = 1;
+		}else if(robotStep == 1) {
+			try {
+				robotIdentifier = Integer.parseInt(input);
+				robotStep = 2;
+				deliver("Please enter the name of the resource this robot handles:");
+			} catch(NumberFormatException e) {
+				deliver("Input not a number. Please try again.");
+			}
+		}else if(robotStep == 2) {
+			if(input.equals("Button") || input.equals("Eye") || input.equals("Filling") || input.equals("Skin")) {
+				robotResource = "plant.physical.resource." + input;
+				robotStep = 3;
+				deliver("Please enter the identifier of the assembly line to assign this robot:");
+			}else{
+				deliver("Invalid resource, please try again.");
+			}
+		}else {
+			try {
+				int assemblyLine = Integer.parseInt(input);
+
+				Robot robot = null;
+				try {
+					robot = new Robot((Class<? extends Resource>) Class.forName(robotResource), robotIdentifier);
+					server.getFactory().addRobotToAssemblyLine(robot, assemblyLine);
+				} catch (ClassNotFoundException e) {
+					System.out.println("Oops, this should have already been checked!? Invalid resource class!");
+				}
+				
+				
+				displayMenu();
+			} catch(NumberFormatException e) {
+				deliver("Input not a number. Please try again.");
+			}
+		}
 	}
 	
 }

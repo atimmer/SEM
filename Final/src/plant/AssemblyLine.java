@@ -183,6 +183,12 @@ public class AssemblyLine {
 	 * @return Description of the current status
 	 */
 	public String getStatus() {
-		return "Line " + this.identifier + "\n-------\nRunning: " + this.isRunning + "\nTasks left: " + this.tasks.size() + "\n\n";
+		String status ="Line " + this.identifier + "\n-------\nRunning: " + this.isRunning + "\nTasks left: " + this.tasks.size() + "\n";
+		status = status + "Number of robots: " + robots.size() + "\n";
+		for(int i = 0; i < bins.size(); i++) {
+			status = status + bins.get(i).getStatus() + "\n";
+		}
+		
+		return status;
 	}
 }
