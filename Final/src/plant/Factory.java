@@ -1,6 +1,8 @@
 package plant;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import plant.physical.Product;
 import plant.physical.resource.*;
@@ -17,12 +19,19 @@ public class Factory {
 	private String name;
 	
 	/**
-	 * Creates a new Manufacturing Plant
+	 * Creates a new Manufacturing Plant also starts a 3s timer for letting assembly lines perform work
 	 * @param name
 	 */
 	public Factory(String name) {
 		lines = new ArrayList<AssemblyLine>();
 		this.name = name;
+		
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				work();
+			}
+		}, 0l, 3000l);
 	}
 	
 	/**
@@ -42,6 +51,19 @@ public class Factory {
 		for(int i = 0; i < lines.size(); i++) {
 			if(lines.get(i).getIdentifier() == identifier) {
 				lines.get(i).addStorageBin(bin);
+			}
+		}
+	}
+	
+	/**
+	 * Adds a robot to a given assembly line in this factory
+	 * @param robot The robot to add
+	 * @param identifier The identifier for the assembly line
+	 */
+	public void addRobotToAssemblyLine(Robot robot, int identifier) {
+		for(int i = 0; i < lines.size(); i++) {
+			if(lines.get(i).getIdentifier() == identifier) {
+				lines.get(i).addRobot(robot);
 			}
 		}
 	}

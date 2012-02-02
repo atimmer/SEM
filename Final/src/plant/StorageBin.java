@@ -74,5 +74,13 @@ public class StorageBin {
 		}
 	}
 	
+	/**
+	 * Returns the current status of this storage bin
+	 * @return The current status
+	 */
+	public String getStatus() {
+		return "Bin (" + resourceType.getSimpleName() + ") " + this.getResourcesLeft() + "/" + this.capacity + " resources left";
+	}
+	
 	
 }
