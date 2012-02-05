@@ -10,6 +10,7 @@ public class AllTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(TestStuffedAnimals.class);
 		suite.addTestSuite(TestStorageBin.class);
+		suite.addTestSuite(TestProductionLine.class);
 		//$JUnit-END$
 		return suite;
 	}

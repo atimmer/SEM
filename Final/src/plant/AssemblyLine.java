@@ -191,4 +191,12 @@ public class AssemblyLine {
 		
 		return status;
 	}
+	
+	/**
+	 * Returns whether or not the assembly line is running
+	 * @return True if assembly line is running, false otherwise
+	 */
+	public boolean isRunning() {
+		return isRunning;
+	}
 }
